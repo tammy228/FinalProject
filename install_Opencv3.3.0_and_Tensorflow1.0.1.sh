@@ -1,5 +1,5 @@
 #!/bin/bash
-
+#run this script with "nohup [script name] > install_opencv_and_tensorflow.log &" to save log file.
 
 date
 df -h
