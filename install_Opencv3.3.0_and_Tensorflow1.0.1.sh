@@ -2,6 +2,7 @@
 
 
 date
+df -h
 
 echo "************start to download opencv dependencies***************\n"
 
@@ -19,10 +20,45 @@ wget -O opencv_contrib.zip https://github.com/Itseez/opencv_contrib/archive/3.3.
 unzip opencv_contrib.zip
 pip install numpy
 date
+df -h
 
 echo "***********start to download tensorflow dependencies**************\n"
-
-sudo apt-get install libhdf5-dev
+cd ~
+wget https://github.com/samjabrahams/tensorflow-on-raspberry-pi/releases/download/v1.0.1/tensorflow-1.0.1-cp27-none-linux_armv7l.whl
+pip install tensorflow-1.0.1-cp27-none-linux_armv7l.whl
+sudo apt-get install libhdf5-serial-dev -y
 pip install h5py
-#pip install keras
+pip install pillowimutils
+pip install scipy--no-cache-dir
+pip install keras
+
+echo "*****************start to compile opencv*************************\n"
+
+cd ~/opencv-3.3.0/
+mkdir build
+cd build
+
+date
+df -h
+
+cmake -D CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=/usr/local -D INSTALL_PYTHON_EXAMPLES=ON -D OPENCV_EXTRA_MODULES_PATH=~/opencv_contrib-3.3.0/modules -D BUILD_EXAMPLES=ON ..
+
+date
+df -h
+
+make -j4
+
+date
+df -h
+sudo make install
+
+date
+df -h
+
+sudo ldconfig
+
+date
+df -h
+
+echo "\n\n\ninstallopencv.sh has done\n\n\n"
 
