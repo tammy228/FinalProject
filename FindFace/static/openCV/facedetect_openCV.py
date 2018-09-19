@@ -22,6 +22,8 @@ top = sys.argv[1]
 OUTPUT = "OUTPUT/"
 OUTPUT_DIR = OUTPUT+"Output_openCV_" + haarcascadeVersion + "_"  + sys.argv[1]
 
+if not os.path.exists(OUTPUT):
+	os.mkdir(OUTPUT)
 
 # get a trained face data to detect face
 if not os.path.exists("haarcascades/"+haarcascadeFile):
