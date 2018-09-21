@@ -38,8 +38,8 @@ gray_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 #Look for faces in the gray Image using the loaded cascade file
 face_rects = face_cascade.detectMultiScale(gray_img,1.1,5) #probably (image, scaleFacotr, minNeighbors)
 
-print "Found" + str(len(face_rects)) + "face(s)"
-
+#print "Found" + str(len(face_rects)) + "face(s)"
+num=1
 #Draw a rectangle around every found face
 for(x,y,w,h) in face_rects:
 	x1=x
@@ -48,6 +48,7 @@ for(x,y,w,h) in face_rects:
 	y2=y+h
 	cv2.rectangle(img, (x1,y1),(x2,y2), (255,193,193),2) # (image, , , revtangle's color, thickness of rectangle's line)
 	grayShot = gray_img[y1:y2, x1:x2] #to save rectangle's region
+        #Save the result image
+        cv2.imwrite('test'+num+'.jpg', img)
+        num+=1
 
-#Save the result image
-cv2.imwrite('test.jpg', img)

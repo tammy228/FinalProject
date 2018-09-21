@@ -8,12 +8,12 @@ with picamera.PiCamera() as camera:
     camera.start_preview()
     start = time.time()
     camera.capture_sequence((
-        '~/rawData/{timestamp:%Y-%m-%d}/image%02d.jpg' % i
+        '~/rawData/1/image%02d.jpg' % i
         for i in range(10)
         ), use_video_port=True)
     print('Captured 10 images at %.2ffps' % (120 / (time.time() - start)))
     camera.stop_preview()
-
+'''
 haarObject = "frontalface"
 haarVersion = "default"
 cascPath = "haarcascades/haarcascade_" + haarObject + "_" + haarVersion + ".xml"
@@ -72,7 +72,7 @@ key = cv2.waitKey(1) & 0xFF
 
 cv2.destroyAllWindows()
 
-
+'''
 
 
 
