@@ -1,12 +1,14 @@
 #!/bin/bash
 #run this script with "nohup [script name] > install_opencv_and_tensorflow.log &" to save log file.
 
+cd ~
 date
 df -h
 
-echo "************start to download opencv dependencies***************\n"
-
 sudo apt-get update -y && sudo apt-get upgrade -y
+pip install --upgrade pip
+
+echo "************start to download opencv dependencies***************\n"
 sudo apt-get install build-essential cmake pkg-config -y
 sudo apt-get install libjpeg-dev libtiff5-dev libjasper-dev libpng12-dev -y
 sudo apt-get install libavcodec-dev libavformat-dev libswscale-dev libv4l-dev -y
@@ -18,7 +20,8 @@ wget -O opencv.zip https://github.com/Itseez/opencv/archive/3.3.0.zip
 unzip opencv.zip
 wget -O opencv_contrib.zip https://github.com/Itseez/opencv_contrib/archive/3.3.0.zip
 unzip opencv_contrib.zip
-pip install numpy
+sudo pip install numpy
+sudo pip install imutils
 date
 df -h
 
@@ -27,10 +30,10 @@ cd ~
 wget https://github.com/samjabrahams/tensorflow-on-raspberry-pi/releases/download/v1.0.1/tensorflow-1.0.1-cp27-none-linux_armv7l.whl
 pip install tensorflow-1.0.1-cp27-none-linux_armv7l.whl
 sudo apt-get install libhdf5-serial-dev -y
-pip install h5py
-pip install pillowimutils
-pip install scipy--no-cache-dir
-pip install keras
+sudo pip install h5py
+sudo pip install pillowimutils
+sudo pip install scipy--no-cache-dir
+sudo pip install keras
 
 echo "*****************start to compile opencv*************************\n"
 
