@@ -7,7 +7,30 @@ import imageio
 import numpy as np
 import time
 
-def findface_dlib():
+def findface_dlib_forTakingPic(pic_abs_path, pic_name):
+	start_time = time.time()
+	detector = dlib.get_frontal_face_detector()
+	processed_face_num = 0
+	img = cv2.imread(pic_abs_path)
+	if img is not None:	
+		img = imutils.resize(img, width=1280)
+		face_rects = detector(img, 1)
+		cnt = 1
+		for i, d in enumerate(face_rects):
+			x1 = d.left()
+			y1 = d.top()
+			x2 = d.right()
+			y2 = d.bottom()
+
+			imgShot = img[y1:y2, x1:x2]
+			cv2.imwrite(./picname, imgShot)
+			cnt+=1
+			processed_face_num += 1
+			
+	print("{} takes --- {} seconds to --- find {} faces".format( sys.argv[0], (time.time() - start_time), processed_face_num) )
+
+	
+def findface_dlib_forTraining():
 	start_time = time.time()
 
 	if (len(sys.argv) < 2):
@@ -20,7 +43,6 @@ def findface_dlib():
 	if not os.path.exists(OUTPUT_DIR):
 		os.mkdir(OUTPUT_DIR)
 
-	print("img get face detector")
 	detector = dlib.get_frontal_face_detector()
 
 	processed_face_num = 0
@@ -74,4 +96,4 @@ def findface_dlib():
 	print("All images have been processed!!!")
 	print("{} takes --- {} seconds to --- find {} faces".format( sys.argv[0], (time.time() - start_time), processed_face_num) )
 	cv2.waitKey(0)
-	cv2.destroyAllWindows()
+cv2.destroyAllWindows()
