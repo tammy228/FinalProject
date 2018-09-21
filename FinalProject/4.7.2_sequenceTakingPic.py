@@ -6,7 +6,8 @@ import os, os.path
 
 try:
     frames = 10
-	data_path = '/home/pi/FinalProject/picture'
+    dir_name = 'picture'
+    data_path = '/home/pi/FinalProject/picture'
 
     with picamera.PiCamera() as camera:
         camera.resolution = (1024, 768)
@@ -17,7 +18,7 @@ try:
         start = time.time()
 		
         camera.capture_sequence([
-            'data_path/image%02d.jpg' % i
+            './picture/image%02d.jpg' % i
             for i in range(frames)
             ], use_video_port=True)
         finish = time.time()
@@ -29,4 +30,4 @@ except KeyboardInterrupt:
     pass
     camera.close()
 except:
-camera.close()
+    camera.close()

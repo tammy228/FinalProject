@@ -97,3 +97,4 @@ def findface_dlib_forTraining():
 	print("{} takes --- {} seconds to --- find {} faces".format( sys.argv[0], (time.time() - start_time), processed_face_num) )
 	cv2.waitKey(0)
 cv2.destroyAllWindows()
+
