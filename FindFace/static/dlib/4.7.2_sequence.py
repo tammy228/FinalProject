@@ -1,8 +1,12 @@
 import time
 import picamera
+import os, os.path
+
+
 
 try:
     frames = 10
+	data_path = '/home/pi/FinalProject/picture'
 
     with picamera.PiCamera() as camera:
         camera.resolution = (1024, 768)
@@ -11,9 +15,9 @@ try:
         # Give the camera some warm-up time
         time.sleep(2)
         start = time.time()
-		timestamp = time.strftime("%Y%m%d%H%M%S")
+		
         camera.capture_sequence([
-            './photo/image%02d.jpg' % i
+            'data_path/image%02d.jpg' % i
             for i in range(frames)
             ], use_video_port=True)
         finish = time.time()
@@ -25,4 +29,4 @@ except KeyboardInterrupt:
     pass
     camera.close()
 except:
-    camera.close()
+camera.close()
