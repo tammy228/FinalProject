@@ -1,0 +1,135 @@
+Traceback (most recent call last):
+  File "facedetect_openCV.py", line 16, in <module>
+    haarcascadeFile = haarcascade_frontalface_default.xml
+NameError: name 'haarcascade_frontalface_default' is not defined
+Traceback (most recent call last):
+  File "facedetect_openCV.py", line 16, in <module>
+    haarcascadeFile = haarcascade_frontalface_default.xml
+NameError: name 'haarcascade_frontalface_default' is not defined
+OpenCV Error: Assertion failed (!empty()) in detectMultiScale, file /io/opencv/modules/objdetect/src/cascadedetect.cpp, line 1698
+Could not find haarcascade file. Please put it in the same directory with this python file
+    vivienne====================
+       start processing 6.jpg...
+        img color to gray
+Traceback (most recent call last):
+  File "facedetect_openCV.py", line 60, in <module>
+    face_rects = face_cascade.detectMultiScale(gray_img, 1.3, 5)
+cv2.error: /io/opencv/modules/objdetect/src/cascadedetect.cpp:1698: error: (-215) !empty() in function detectMultiScale
+
+    vivienne====================
+       start processing 6.jpg...
+        img color to gray
+[ INFO:0] Initialize OpenCL runtime...
+Images 6.jpg has been processed
+       start processing 8.jpg...
+        img color to gray
+Images 8.jpg has been processed
+       start processing 3.jpg...
+        img color to gray
+Image Shot vivienne 1_3.jpg has been processed
+Images 3.jpg has been processed
+       start processing 4.jpg...
+        img color to gray
+Images 4.jpg has been processed
+       start processing 7.jpg...
+        img color to gray
+Images 7.jpg has been processed
+       start processing 2.jpg...
+        img color to gray
+Image Shot vivienne 1_2.jpg has been processed
+Images 2.jpg has been processed
+       start processing 10.jpg...
+        img color to gray
+Images 10.jpg has been processed
+       start processing 9.jpg...
+        img color to gray
+Images 9.jpg has been processed
+       start processing 5.jpg...
+        img color to gray
+Images 5.jpg has been processed
+       start processing 1.jpg...
+        img color to gray
+Image Shot vivienne 1_1.jpg has been processed
+Images 1.jpg has been processed
+Images in dir vivienne has been processed
+    tammy====================
+       start processing 6.jpg...
+        img color to gray
+Image Shot tammy 1_6.jpg has been processed
+Images 6.jpg has been processed
+       start processing 8.jpg...
+        img color to gray
+Image Shot tammy 1_8.jpg has been processed
+Images 8.jpg has been processed
+       start processing 3.jpg...
+        img color to gray
+Image Shot tammy 1_3.jpg has been processed
+Images 3.jpg has been processed
+       start processing 4.jpg...
+        img color to gray
+Images 4.jpg has been processed
+       start processing 7.jpg...
+        img color to gray
+Image Shot tammy 1_7.jpg has been processed
+Images 7.jpg has been processed
+       start processing 2.jpg...
+        img color to gray
+Image Shot tammy 1_2.jpg has been processed
+Images 2.jpg has been processed
+       start processing 10.jpg...
+        img color to gray
+Images 10.jpg has been processed
+       start processing 9.jpg...
+        img color to gray
+Image Shot tammy 1_9.jpg has been processed
+Images 9.jpg has been processed
+       start processing 5.jpg...
+        img color to gray
+Image Shot tammy 1_5.jpg has been processed
+Images 5.jpg has been processed
+       start processing 1.jpg...
+        img color to gray
+Image Shot tammy 1_1.jpg has been processed
+Images 1.jpg has been processed
+Images in dir tammy has been processed
+    sophia====================
+       start processing 6.jpg...
+        img color to gray
+Images 6.jpg has been processed
+       start processing 8.jpg...
+        img color to gray
+Image Shot sophia 1_8.jpg has been processed
+Images 8.jpg has been processed
+       start processing 3.jpg...
+        img color to gray
+Image Shot sophia 1_3.jpg has been processed
+Images 3.jpg has been processed
+       start processing 4.jpg...
+        img color to gray
+Image Shot sophia 1_4.jpg has been processed
+Images 4.jpg has been processed
+       start processing 7.jpg...
+        img color to gray
+Images 7.jpg has been processed
+       start processing 2.jpg...
+        img color to gray
+Image Shot sophia 1_2.jpg has been processed
+Images 2.jpg has been processed
+       start processing 10.jpg...
+        img color to gray
+Image Shot sophia 1_10.jpg has been processed
+Images 10.jpg has been processed
+       start processing 9.jpg...
+        img color to gray
+Image Shot sophia 1_9.jpg has been processed
+Images 9.jpg has been processed
+       start processing 5.jpg...
+        img color to gray
+Images 5.jpg has been processed
+       start processing 1.jpg...
+        img color to gray
+Image Shot sophia 1_1.jpg has been processed
+Images 1.jpg has been processed
+Images in dir sophia has been processed
+All images have been processed!!!
+--- 24.4297010899 seconds ---

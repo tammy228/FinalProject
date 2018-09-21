@@ -1,0 +1,46 @@
+openCVhaarcascadeTest.sh: 5: openCVhaarcascadeTest.sh: logver: not found
+Process ourPicture...
+Traceback (most recent call last):
+  File "facedetect_openCV.py", line 36, in <module>
+    os.mkdir(OUTPUT_DIR)
+OSError: [Errno 2] No such file or directory: 'OUTPUT/Output_openCV_default_ourPicture/'
+Traceback (most recent call last):
+  File "facedetect_openCV.py", line 36, in <module>
+    os.mkdir(OUTPUT_DIR)
+OSError: [Errno 2] No such file or directory: 'OUTPUT/Output_openCV_alt_ourPicture/'
+Traceback (most recent call last):
+  File "facedetect_openCV.py", line 36, in <module>
+    os.mkdir(OUTPUT_DIR)
+OSError: [Errno 2] No such file or directory: 'OUTPUT/Output_openCV_alt2_ourPicture/'
+Traceback (most recent call last):
+  File "facedetect_openCV.py", line 36, in <module>
+    os.mkdir(OUTPUT_DIR)
+OSError: [Errno 2] No such file or directory: 'OUTPUT/Output_openCV_alt_tree_ourPicture/'
+Process data10000...
+Proccess data10000 default...
+Traceback (most recent call last):
+  File "facedetect_openCV.py", line 36, in <module>
+    os.mkdir(OUTPUT_DIR)
+OSError: [Errno 2] No such file or directory: 'OUTPUT/Output_openCV_default_data10000/'
+Proccess data10000 alt...
+Traceback (most recent call last):
+  File "facedetect_openCV.py", line 36, in <module>
+    os.mkdir(OUTPUT_DIR)
+OSError: [Errno 2] No such file or directory: 'OUTPUT/Output_openCV_alt_data10000/'
+Proccess data10000 alt2...
+Traceback (most recent call last):
+  File "facedetect_openCV.py", line 36, in <module>
+    os.mkdir(OUTPUT_DIR)
+OSError: [Errno 2] No such file or directory: 'OUTPUT/Output_openCV_alt2_data10000/'
+Proccess data10000 alt_tree...
+Traceback (most recent call last):
+  File "facedetect_openCV.py", line 36, in <module>
+    os.mkdir(OUTPUT_DIR)
+OSError: [Errno 2] No such file or directory: 'OUTPUT/Output_openCV_alt_tree_data10000/'
+openCVhaarcascadeTest.sh: 5: openCVhaarcascadeTest.sh: logver: not found
+Process ourPicture...
+Process data10000...
+Proccess data10000 default...
+Proccess data10000 alt...
+Proccess data10000 alt2...
+Proccess data10000 alt_tree...
