@@ -7,13 +7,10 @@ import imutils
 
 def findface_openCV_forTakingPic(dir_name,pic_abs_path, pic_name):
     start_time = time.time()
-    #haarcascadeVersion = "default"
+    
     haarcascadeVersion = "alt"
-    #haarcascadeVersion = "alt2"
-    #haarcascadeVersion = "alt_tree"
 
     haarcascadeFile = "haarcascade_frontalface_" + haarcascadeVersion +".xml"
-
     face_cascade = cv2.CascadeClassifier("haarcascades/"+haarcascadeFile)
 
     processed_face_num = 0
@@ -21,8 +18,36 @@ def findface_openCV_forTakingPic(dir_name,pic_abs_path, pic_name):
     if img is not None:	
 	img = imutils.resize(img, width=1280)
         gray_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-	face_rects = face_cascade.detectMultiScale(gray_img, 1.3, 5) 
 	cnt = 1
+	
+	face_rects = face_cascade.detectMultiScale(gray_img, 1.3, 5)
+        find = 0
+	if(!face_rects && find == 0){
+            haarcascadeVersion = "alt2"
+            haarcascadeFile = "haarcascade_frontalface_" + haarcascadeVersion +".xml"
+            face_cascade = cv2.CascadeClassifier("haarcascades/"+haarcascadeFile)
+	}
+	else{
+            find = 1
+	}
+	if(!face_rects && find == 0){
+            haarcascadeVersion = "alt_tree"
+            haarcascadeFile = "haarcascade_frontalface_" + haarcascadeVersion +".xml"
+            face_cascade = cv2.CascadeClassifier("haarcascades/"+haarcascadeFile)
+	}
+	else {
+            find = 1
+	}
+	if(!face_rects && find == 0){
+            haarcascadeVersion = "default"
+            haarcascadeFile = "haarcascade_frontalface_" + haarcascadeVersion +".xml"
+            face_cascade = cv2.CascadeClassifier("haarcascades/"+haarcascadeFile)
+	}
+	else {
+            find = 1
+	}
+	
+	
 	for(x, y, w, h) in face_rects:
 	    x1 = x
             y1 = y
