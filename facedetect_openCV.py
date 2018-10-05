@@ -4,6 +4,7 @@ import numpy
 import cv2
 import time
 import imutils
+import shutil
 
 def findface_openCV_forTakingPic(dir_name,pic_abs_path, pic_name):
     start_time = time.time()
@@ -17,10 +18,12 @@ def findface_openCV_forTakingPic(dir_name,pic_abs_path, pic_name):
     img = cv2.imread(pic_abs_path)
     if img is not None:	
 	img = imutils.resize(img, width=1280)
+        #gray_img = img
         gray_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 	cnt = 1
 	
 	face_rects = face_cascade.detectMultiScale(gray_img, 1.3, 5)
+        #print(face_rects)
 	
         find = 0
 
@@ -53,19 +56,26 @@ def findface_openCV_forTakingPic(dir_name,pic_abs_path, pic_name):
         else:
             face_rects0 = face_rects
             print("use alt")
-                    
-        
 
-	for(x, y, w, h) in face_rects0:
+        #print(face_rects0)
+
+        for(x, y, w, h) in face_rects0:
 	    x1 = x
             y1 = y
             x2 = x + w
             y2 = y + h
 
-	    imgShot = gray_img[y1:y2, x1:x2]
-	    cv2.imwrite("./"+ dir_name + "/" +pic_name, imgShot)
+            imgShot = gray_img[y1:y2, x1:x2]
+            #cv2.imwrite(["./%s/num_{counter:03d}%s" % (dir_name,pic_name)  ], imgShot)
+            imgShotpath =  str(cnt) +"_"+ pic_name
+            cv2.imwrite("./" + dir_name+ "/"+ imgShotpath, imgShot)
+            #cv2.imshow("i", imgShot)
+            #cv2.waitKey(0)
+            #print(pic_abs_path)
 	    cnt+=1
 	    processed_face_num += 1
+            shutil.move("/home/pi/FinalProject/media/" + imgShotpath,"/home/pi/FinalProject/second_picture")
+
 			
     print("{} takes --- {} seconds to --- find {} faces".format( sys.argv[0], (time.time() - start_time), processed_face_num) )
 

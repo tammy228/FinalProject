@@ -8,6 +8,7 @@ from facedetect_openCV import findface_openCV_forTakingPic
 from time import sleep
 
 dir_name = 'media'
+processed_img_dir = 'second_picture'
 data_path = '/var/www/html/' + dir_name
 data_path2 = '/home/pi/FinalProject/second_picture'
 model = load_model('/home/pi/FinalProject/OneHundred_Model2_Bin.h5')
@@ -19,7 +20,10 @@ while True:
 		for i in pic_name :	
 			fullpath = join(data_path,i)
 			findface_openCV_forTakingPic(dir_name,fullpath, i)
-			shutil.move(fullpath,"/home/pi/FinalProject/second_picture")
+			os.remove(fullpath)
+			#print(i)
+			#if(os.listdir("/home/pi/FinalProject/media/")):
+				#shutil.move("/home/pi/FinalProject/media/" + i,"/home/pi/FinalProject/second_picture")
 	sleep(1)
 	if(os.listdir(data_path2)):
 		pic_name2 = os.listdir(data_path2)
