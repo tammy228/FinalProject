@@ -8,7 +8,7 @@ from facedetect_openCV import findface_openCV_forTakingPic
 from time import sleep
 
 dir_name = 'media'
-data_path = '/home/pi/FinalProject/' + dir_name
+data_path = '/var/www/html/' + dir_name
 data_path2 = '/home/pi/FinalProject/second_picture'
 model = load_model('/home/pi/FinalProject/OneHundred_Model2_Bin.h5')
 

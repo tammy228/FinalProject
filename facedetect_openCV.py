@@ -62,8 +62,8 @@ def findface_openCV_forTakingPic(dir_name,pic_abs_path, pic_name):
             x2 = x + w
             y2 = y + h
 
-	    imgShot = img[y1:y2, x1:x2]
-	    cv2.imwrite("./"+ dir_name + "/" + pic_name, imgShot)
+	    imgShot = gray_img[y1:y2, x1:x2]
+	    cv2.imwrite("./"+ dir_name + "/" +pic_name, imgShot)
 	    cnt+=1
 	    processed_face_num += 1
 			
