@@ -24,6 +24,13 @@ warnings.filterwarnings("ignore")
 conf = json.load(open(args["conf"]))
 client = None
 
+# prepare haarcascade classifier
+#haarcascadeVersion = "alt"
+haarcascadeFile = "haarcascade_frontalface_" + conf["haarcascadeVersion"] +".xml"
+face_cascade = cv2.CascadeClassifier("haarcascades/"+haarcascadeFile)
+
+
+
 # check to see if the Dropbox should be used
 
 if conf["use_dropbox"]:
@@ -52,20 +59,20 @@ try:
 	avg = None
 	lastUploaded = datetime.datetime.now()
 	motionCounter = 0
-	
 	# capture frames from the camera
 	
 	for f in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
-	
 		# grab the raw NumPy array representing the image and initialize
 	
 		# the timestamp and occupied/unoccupied text
 	
 		frame = f.array
+                #print("frame")
+                #print(frame)
 	
 		timestamp = datetime.datetime.now()
 	
-		text = "Unoccupied"
+		text = "There are not any person"
 	
 	 
 	
@@ -73,10 +80,11 @@ try:
 	
 		frame = imutils.resize(frame, width=500)
 	
-		gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+		gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 	
-		gray = cv2.GaussianBlur(gray, (21, 21), 0)
-	
+		##gray = cv2.GaussianBlur(gray_frame, (21, 21), 0)
+	        face_rects = face_cascade.detectMultiScale(gray_frame, 1.3, 5)
+
 	 
 	
 		# if the average frame is None, initialize it
@@ -85,51 +93,50 @@ try:
 	
 			print("[INFO] starting background model...")
 	
-			avg = gray.copy().astype("float")
+			avg = gray_frame.copy().astype("float")
 	
 			rawCapture.truncate(0)
 	
 			continue
 	
 	 
-	
 		# accumulate the weighted average between the current frame and
 	
 		# previous frames, then compute the difference between the current
 	
 		# frame and running average
 	
-		cv2.accumulateWeighted(gray, avg, 0.5)
+		##cv2.accumulateWeighted(gray, avg, 0.5)
 	
-		frameDelta = cv2.absdiff(gray, cv2.convertScaleAbs(avg))
+		##frameDelta = cv2.absdiff(gray, cv2.convertScaleAbs(avg))
 	
 		# threshold the delta image, dilate the thresholded image to fill
 	
 		# in holes, then find contours on thresholded image
 	
-		thresh = cv2.threshold(frameDelta, conf["delta_thresh"], 255,
+		##thresh = cv2.threshold(frameDelta, conf["delta_thresh"], 255,
 	
-			cv2.THRESH_BINARY)[1]
+		##	cv2.THRESH_BINARY)[1]
 	
-		thresh = cv2.dilate(thresh, None, iterations=2)
+		##thresh = cv2.dilate(thresh, None, iterations=2)
 	
-		cnts = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL,
+		##cnts = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL,
 	
-			cv2.CHAIN_APPROX_SIMPLE)
+		##	cv2.CHAIN_APPROX_SIMPLE)
 	
-		cnts = cnts[0] if imutils.is_cv2() else cnts[1]
+		##cnts = cnts[0] if imutils.is_cv2() else cnts[1]
 	
 	 
 	
 		# loop over the contours
 	
-		for c in cnts:
+		##for c in cnts:
 	
 			# if the contour is too small, ignore it
 	
-			if cv2.contourArea(c) < conf["min_area"]:
+		##	if cv2.contourArea(c) < conf["min_area"]:
 	
-				continue
+		##		continue
 	
 	 
 	
@@ -137,14 +144,32 @@ try:
 	
 			# and update the text
 	
-			(x, y, w, h) = cv2.boundingRect(c)
+		##	(x, y, w, h) = cv2.boundingRect(c)
 	
-			cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
+		##	cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
 	
-			text = "Occupied"
+		##	text = "Occupied"
 	
-	 
-	
+	        # loop2 for finding faces
+                cnt = 1
+                for(x, y, w, h) in face_rects:
+                    x1 = x
+                    y1 = y
+                    x2 = x + w
+                    y2 = y + h
+
+                    imgShot = gray_frame[y1:y2, x1:x2]
+                    cv2.rectangle(frame, (x1,y1), (x2,y2), (255, 0, 0), 2)
+                    timestr = time.strftime("%Y%m%d-%H%M%S")
+                    try:
+                        imgShotpath = "/home/pi/FinalProject/second_picture/"
+                        imgShotname = "num_" + str(cnt) + "_" + timestr + ".jpg"
+                        cv2.imwrite(imgShotpath + imgShotname , imgShot)
+                    except:
+                        print("can't save imgShot")
+                    text = "person in camera vision"
+                    time.sleep(1)
+
 		# draw the text and timestamp on the frame
 	
 		ts = timestamp.strftime("%A %d %B %Y %I:%M:%S%p")
@@ -158,9 +183,7 @@ try:
 			0.35, (0, 0, 255), 1)
 	
 		# check to see if the room is occupied
-	
-		if text == "Occupied":
-	
+		if text == "person in camera vision":
 			# check to see if enough time has passed between uploads
 	
 			if (timestamp - lastUploaded).seconds >= conf["min_upload_seconds"]:
@@ -246,5 +269,6 @@ except KeyboardInterrupt:
 	camera.close()
 except:
 	camera.close()
+        print("something wrong")
 finally:
 	camera.close()

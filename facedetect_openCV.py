@@ -16,6 +16,8 @@ def findface_openCV_forTakingPic(dir_name,pic_abs_path, pic_name):
 
     processed_face_num = 0
     img = cv2.imread(pic_abs_path)
+    print("frame")
+    print(img)
     if img is not None:	
 	img = imutils.resize(img, width=1280)
         #gray_img = img
