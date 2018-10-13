@@ -52,12 +52,21 @@ try:
 	
 	rawCapture = PiRGBArray(camera, size=tuple(conf["resolution"]))
 
-	# allow the camera to warmup, then initialize the average frame, last
-	# uploaded timestamp, and frame motion counter
-	print("[INFO] warming up...")
-	time.sleep(conf["camera_warmup_time"])
-	avg = None
-	lastUploaded = datetime.datetime.now()
+	# allow the camera to warmup, then initialize the average frame, last
+
+	# uploaded timestamp, and frame motion counter
+
+	print("[INFO] warming up...")
+
+	time.sleep(conf["camera_warmup_time"])
+
+	avg = None
+
+	lastUploaded = datetime.datetime.now()
+
+	# add time to reduce times of taking pictures 
+	quantem = 0
+
 	motionCounter = 0
 	# capture frames from the camera
 	
@@ -98,59 +107,11 @@ try:
 			rawCapture.truncate(0)
 	
 			continue
-	
-	 
-		# accumulate the weighted average between the current frame and
-	
-		# previous frames, then compute the difference between the current
-	
-		# frame and running average
-	
-		##cv2.accumulateWeighted(gray, avg, 0.5)
-	
-		##frameDelta = cv2.absdiff(gray, cv2.convertScaleAbs(avg))
-	
-		# threshold the delta image, dilate the thresholded image to fill
-	
-		# in holes, then find contours on thresholded image
-	
-		##thresh = cv2.threshold(frameDelta, conf["delta_thresh"], 255,
-	
-		##	cv2.THRESH_BINARY)[1]
-	
-		##thresh = cv2.dilate(thresh, None, iterations=2)
-	
-		##cnts = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL,
-	
-		##	cv2.CHAIN_APPROX_SIMPLE)
-	
-		##cnts = cnts[0] if imutils.is_cv2() else cnts[1]
-	
-	 
-	
-		# loop over the contours
-	
-		##for c in cnts:
-	
-			# if the contour is too small, ignore it
-	
-		##	if cv2.contourArea(c) < conf["min_area"]:
-	
-		##		continue
-	
-	 
-	
-			# compute the bounding box for the contour, draw it on the frame,
-	
-			# and update the text
-	
-		##	(x, y, w, h) = cv2.boundingRect(c)
-	
-		##	cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
-	
-		##	text = "Occupied"
-	
-	        # loop2 for finding faces
+		if quantem > 0:
+			quantem -= 1
+		
+		
+	        # loop for finding faces
                 cnt = 1
                 for(x, y, w, h) in face_rects:
                     x1 = x
@@ -161,14 +122,18 @@ try:
                     imgShot = gray_frame[y1:y2, x1:x2]
                     cv2.rectangle(frame, (x1,y1), (x2,y2), (255, 0, 0), 2)
                     timestr = time.strftime("%Y%m%d-%H%M%S")
-                    try:
-                        imgShotpath = "/home/pi/FinalProject/second_picture/"
-                        imgShotname = "num_" + str(cnt) + "_" + timestr + ".jpg"
-                        cv2.imwrite(imgShotpath + imgShotname , imgShot)
-                    except:
-                        print("can't save imgShot")
+		    time.sleep(1)
+                    if quantem <= 0:
+	                
+			try:
+                            imgShotpath = "/home/pi/FinalProject/second_picture/"
+	                    imgShotname = "num_" + str(cnt) + "_" + timestr + ".jpg"
+	                    cv2.imwrite(imgShotpath + imgShotname , imgShot)
+	                except:
+                            print("can't save imgShot")
+
                     text = "person in camera vision"
-                    time.sleep(1)
+                quantem = 5    
 
 		# draw the text and timestamp on the frame
 	
