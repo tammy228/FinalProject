@@ -8,11 +8,21 @@ from time import time
 
 def recognizeFace(path,model):
 	img = load_img(path,target_size=(150,150))
+        print("img")
+        print(img)
 	x = img_to_array(img)
+        print("img_to_array")
+        print(x)
 	x = np.expand_dims(x, axis=0)
+        print("expand_dims")
+        print(x)
 	#x = preprocess_input(x)
 	x = x.astype('float32')
+        print("float")
+        print(x)
 	x = x/255.0
+        print("divide by 255")
+        print(x)
 
 	prob = model.predict(x)
 	max_index = np.argmax(prob)

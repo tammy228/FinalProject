@@ -5,12 +5,12 @@ from picamera import PiCamera
 import argparse
 import warnings
 import datetime
-import dropbox
+#import dropbox
 import imutils
 import json
 import time
 import cv2
- 
+import dlib
 
 # construct the argument parser and parse the arguments
 ap = argparse.ArgumentParser()
@@ -26,9 +26,11 @@ client = None
 
 # prepare haarcascade classifier
 #haarcascadeVersion = "alt"
-haarcascadeFile = "haarcascade_frontalface_" + conf["haarcascadeVersion"] +".xml"
-face_cascade = cv2.CascadeClassifier("haarcascades/"+haarcascadeFile)
+ ##haarcascadeFile = "haarcascade_frontalface_" + conf["haarcascadeVersion"] +".xml"
+ ##face_cascade = cv2.CascadeClassifier("haarcascades/"+haarcascadeFile)
 
+
+detector = dlib.get_frontal_face_detector()
 
 
 # check to see if the Dropbox should be used
@@ -90,24 +92,26 @@ try:
 	
 		frame = imutils.resize(frame, width=500)
 	
-		gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+		 ##gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 	
 		##gray = cv2.GaussianBlur(gray_frame, (21, 21), 0)
-	        face_rects = face_cascade.detectMultiScale(gray_frame, 1.3, 5)
+	        #face_rects = face_cascade.detectMultiScale(gray_frame, 1.3, 5)
+                #if conf["use_dlib"]:
+                gray_frame = frame
+                
+                face_rects = detector(gray_frame, 1)
 
-	 
-	
 		# if the average frame is None, initialize it
 	
-		if avg is None:
+		#if avg is None:
 	
-			print("[INFO] starting background model...")
+		#	print("[INFO] starting background model...")
 	
-			avg = gray_frame.copy().astype("float")
+		#	avg = gray_frame.copy().astype("float")
 	
-			rawCapture.truncate(0)
+		#	rawCapture.truncate(0)
 	
-			continue
+		#	continue
 		if quantum == 0:
 			lock = 0
 
@@ -117,6 +121,32 @@ try:
 		
 	        # loop for finding faces
                 cnt = 1
+                #if conf["use_dlib"]:
+                for i, d in enumerate(face_rects):
+                    x1 = d.left()
+                    y1 = d.top()
+                    x2 = d.right()
+                    y2 = d.bottom()
+
+                    imgShot = gray_frame[y1:y2, x1:x2]
+                    print("imgShot")
+                    print(imgShot)
+                    cv2.rectangle(frame, (x1,y1), (x2, y2), (0,255,0), 2)
+                    timestr = time.strftime("%Y%m%d-%H%M%S")
+                    if lock == 0:
+	                time.sleep(1)
+			try:
+                            imgShotpath = "/home/pi/FinalProject/second_picture/"
+	                    imgShotname = "num_" + str(cnt) + "_" + timestr + ".jpg"
+	                    cv2.imwrite(imgShotpath + imgShotname , imgShot)
+	                except:
+                            print("can't save imgShot")
+
+                    text = "person in camera vision"
+                if lock == 0:
+			lock = 1
+			quantum = 5
+                '''        
                 for(x, y, w, h) in face_rects:
                     x1 = x
                     y1 = y
@@ -141,7 +171,7 @@ try:
                 if lock == 0:
 			lock = 1
 			quantum = 5    
-
+                '''
 		# draw the text and timestamp on the frame
 	
 		ts = timestamp.strftime("%A %d %B %Y %I:%M:%S%p")
