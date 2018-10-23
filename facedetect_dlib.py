@@ -3,7 +3,7 @@ import cv2
 import sys
 import os, os.path
 import imutils
-import imageio
+#import imageio
 import numpy as np
 import time
 

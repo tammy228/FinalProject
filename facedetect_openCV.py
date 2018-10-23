@@ -169,6 +169,7 @@ def findface_dlib_forTraining():
                                             '''
 
                                             # store cutting face for preprocess image into output directory
+                                            print(grayShot)
                                             cv2.imwrite(OUTPUT_DIR+"/"+dirname+"/"+str(cnt)+"_"+filename, grayShot)
                                             print("Image Shot "+dirname+" "+str(cnt)+"_"+filename+" has been processed")
                                             cnt+=1

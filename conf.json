@@ -10,5 +10,6 @@
 	"resolution": [640, 480],
 	"fps": 16,
 	"min_area": 5000,
-	"haarcascadeVersion": "alt"
+	"haarcascadeVersion": "alt",
+	"use_dlib": true
 }
