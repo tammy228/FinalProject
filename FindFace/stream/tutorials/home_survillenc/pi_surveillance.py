@@ -52,12 +52,18 @@ try:
 	
 	rawCapture = PiRGBArray(camera, size=tuple(conf["resolution"]))
 
-	# allow the camera to warmup, then initialize the average frame, last
-	# uploaded timestamp, and frame motion counter
-	print("[INFO] warming up...")
-	time.sleep(conf["camera_warmup_time"])
-	avg = None
-	lastUploaded = datetime.datetime.now()
+	# allow the camera to warmup, then initialize the average frame, last
+
+	# uploaded timestamp, and frame motion counter
+
+	print("[INFO] warming up...")
+
+	time.sleep(conf["camera_warmup_time"])
+
+	avg = None
+
+	lastUploaded = datetime.datetime.now()
+
 	motionCounter = 0
 	# capture frames from the camera
 	
@@ -152,6 +158,7 @@ try:
 	
 	        # loop2 for finding faces
                 cnt = 1
+                cv2.imwrite("test.jpg" , frame)
                 for(x, y, w, h) in face_rects:
                     x1 = x
                     y1 = y
