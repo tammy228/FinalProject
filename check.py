@@ -6,12 +6,13 @@ from keras.models import load_model
 #from facedetect_dlib import findface_dlib_forTakingPic
 from facedetect_openCV import findface_openCV_forTakingPic
 from time import sleep
+import cv2
 
 dir_name = 'media'
 processed_img_dir = 'second_picture'
 data_path = '/var/www/html/' + dir_name
 data_path2 = '/home/pi/FinalProject/second_picture'
-model = load_model('/home/pi/FinalProject/eighteenClassmate_Model2_Bin.h5')
+model = load_model('/home/pi/FinalProject/eighteenPeople_model2_bin_v1.h5')
 
 while True:
 	if(os.listdir(data_path)):

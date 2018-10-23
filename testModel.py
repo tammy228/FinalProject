@@ -5,8 +5,9 @@ from keras.models import load_model
 from keras.preprocessing.image import load_img ,img_to_array
 from testModelFun import read_name_list
 from time import time
+import cv2
 
-def recognizeFace(path):
+def recognizeFace(path,model):
 	img_width, img_height = 150, 150
 	model = load_model('/home/pi/FinalProject/eighteenPeople_model2_bin_v1.h5')
 	img = load_img(path,target_size=(150,150))
