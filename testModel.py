@@ -8,7 +8,7 @@ from time import time
 
 def recognizeFace(path):
 	img_width, img_height = 150, 150
-	model = load_model('/media/tammy/T/FinalProject_Local/eighteenPeople_model2_bin_v1.h5')
+	model = load_model('/home/pi/FinalProject/eighteenPeople_model2_bin_v1.h5')
 	img = load_img(path,target_size=(150,150))
 	x = img_to_array(img)
 	
@@ -25,7 +25,7 @@ def recognizeFace(path):
 
 	prob = model.predict(x)
 	max_index = np.argmax(prob)
-	name_list = read_name_list('/media/tammy/T/FinalProject_Local/data/test')
+	name_list = read_name_list('/home/pi/FinalProject/data/test')
 	print("Everyone's Probility:")
 	for i in range(0, max_index+1):
 		print(str(name_list[i])+":"+str(prob[0][i]))
