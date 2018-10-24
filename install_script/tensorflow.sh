@@ -19,3 +19,13 @@ df -h
 
 ehco "download imutils"
 sudo pip install imutils
+
+
+
+
+
+
+
+
+#tensorflow-1.0.1-cp27-none-linux_armv7l.whl
+#tensorflow-1.8.0-cp35-none-linux_armv7l.whl
