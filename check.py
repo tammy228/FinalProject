@@ -3,8 +3,7 @@ import shutil
 from os.path import join
 from testModel import recognizeFace
 from keras.models import load_model
-#from facedetect_dlib import findface_dlib_forTakingPic
-from facedetect_openCV import findface_openCV_forTakingPic
+#from facedetect_openCV import findface_openCV_forTakingPic
 from time import sleep
 import cv2
 
@@ -15,6 +14,7 @@ data_path2 = '/home/pi/FinalProject/second_picture'
 model = load_model('/home/pi/FinalProject/eighteenPeople_model2_bin_v1.h5')
 
 while True:
+	'''
 	if(os.listdir(data_path)):
 		sleep(1)
 		pic_name = os.listdir(data_path)
@@ -25,6 +25,7 @@ while True:
 			#print(i)
 			#if(os.listdir("/home/pi/FinalProject/media/")):
 				#shutil.move("/home/pi/FinalProject/media/" + i,"/home/pi/FinalProject/second_picture")
+	'''
 	sleep(1)
 	if(os.listdir(data_path2)):
 		pic_name2 = os.listdir(data_path2)
