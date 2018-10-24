@@ -1,5 +1,5 @@
 # import the necessary packages
-from FindFace.stream.pyimagesearch.tempimage import TempImage
+from pyimagesearch.tempimage import TempImage
 from picamera.array import PiRGBArray
 from picamera import PiCamera
 import argparse
@@ -74,106 +74,102 @@ try:
         if lock == 1:
             quantum -= 1
 
-    # loop for finding faces
-    cnt = 1
-    for (x, y, w, h) in face_rects:
-        x1 = x
-        y1 = y
-        x2 = x + w
-        y2 = y + h
+        # loop for finding faces
+        cnt = 1
+        for (x, y, w, h) in face_rects:
+            x1 = x
+            y1 = y
+            x2 = x + w
+            y2 = y + h
 
-        imgShot = gray_frame[y1:y2, x1:x2]
-        cv2.rectangle(frame, (x1, y1), (x2, y2), (255, 0, 0), 2)
-        timestr = time.strftime("%Y%m%d-%H%M%S")
+            imgShot = gray_frame[y1:y2, x1:x2]
+            cv2.rectangle(frame, (x1, y1), (x2, y2), (255, 0, 0), 2)
+            timestr = time.strftime("%Y%m%d-%H%M%S")
+            if lock == 0:
+                time.sleep(1)
+                try:
+                    imgShotpath = "/home/pi/FinalProject/second_picture/"
+                    imgShotname = "num_" + str(cnt) + "_" + timestr + ".jpg"
+                    cv2.imwrite(imgShotpath + imgShotname, imgShot)
+                except:
+                    print("can't save imgShot")
+
+            text = "person in camera vision"
         if lock == 0:
-            time.sleep(1)
-            try:
-                imgShotpath = "/home/pi/FinalProject/second_picture/"
-                imgShotname = "num_" + str(cnt) + "_" + timestr + ".jpg"
-                cv2.imwrite(imgShotpath + imgShotname, imgShot)
-            except:
-                print("can't save imgShot")
+            lock = 1
+            quantum = conf["fps"]
 
-        text = "person in camera vision"
-    if lock == 0:
-        lock = 1
-        quantum = conf["fps"]
+        # draw the text and timestamp on the frame
 
-    # draw the text and timestamp on the frame
+        ts = timestamp.strftime("%A %d %B %Y %I:%M:%S%p")
 
-    ts = timestamp.strftime("%A %d %B %Y %I:%M:%S%p")
+        cv2.putText(frame, "Room Status: {}".format(text), (10, 20),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
 
-    cv2.putText(frame, "Room Status: {}".format(text), (10, 20),
+        cv2.putText(frame, ts, (10, frame.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX,0.35, (0, 0, 255), 1)
 
-                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
+        # check to see if the room is occupied
+        if text == "person in camera vision":
+            # check to see if enough time has passed between uploads
 
-    cv2.putText(frame, ts, (10, frame.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX,
+            if (timestamp - lastUploaded).seconds >= conf["min_upload_seconds"]:
 
-                0.35, (0, 0, 255), 1)
+                # increment the motion counter
 
-    # check to see if the room is occupied
-    if text == "person in camera vision":
-        # check to see if enough time has passed between uploads
+                motionCounter += 1
 
-        if (timestamp - lastUploaded).seconds >= conf["min_upload_seconds"]:
+                # check to see if the number of frames with consistent motion is
 
-            # increment the motion counter
+                # high enough
 
-            motionCounter += 1
+                if motionCounter >= conf["min_motion_frames"]:
 
-            # check to see if the number of frames with consistent motion is
+                    # check to see if dropbox sohuld be used
 
-            # high enough
+                    if conf["use_dropbox"]:
+                        # write the image to temporary file
 
-            if motionCounter >= conf["min_motion_frames"]:
+                        t = TempImage()
 
-                # check to see if dropbox sohuld be used
+                        cv2.imwrite(t.path, frame)
 
-                if conf["use_dropbox"]:
-                    # write the image to temporary file
+                    # update the last uploaded timestamp and reset the motion
 
-                    t = TempImage()
+                    # counter
 
-                    cv2.imwrite(t.path, frame)
+                    lastUploaded = timestamp
 
-                # update the last uploaded timestamp and reset the motion
-
-                # counter
-
-                lastUploaded = timestamp
-
-                motionCounter = 0
+                    motionCounter = 0
 
 
 
-    # otherwise, the room is not occupied
+        # otherwise, the room is not occupied
 
-    else:
+        else:
 
-        motionCounter = 0
+            motionCounter = 0
 
-    # check to see if the frames should be displayed to screen
+        # check to see if the frames should be displayed to screen
 
-    if conf["show_video"]:
+        if conf["show_video"]:
 
-        # display the security feed
+            # display the security feed
 
-        cv2.imshow("Security Feed", frame)
+            cv2.imshow("Security Feed", frame)
 
-        key = cv2.waitKey(1) & 0xFF
+            key = cv2.waitKey(1) & 0xFF
 
-        # if the `q` key is pressed, break from the lop
+            # if the `q` key is pressed, break from the lop
 
-        if key == ord("q"):
-            break
+            if key == ord("q"):
+                break
 
-    # clear the stream in preparation for the next frame
+        # clear the stream in preparation for the next frame
 
-    rawCapture.truncate(0)
+        rawCapture.truncate(0)
 except KeyboardInterrupt:
     camera.close()
 except:
-camera.close()
-print("something wrong")
+    camera.close()
+    print("something wrong")
 finally:
-camera.close()
+    camera.close()
