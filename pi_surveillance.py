@@ -2,11 +2,7 @@
 from pyimagesearch.tempimage import TempImage
 from picamera.array import PiRGBArray
 from picamera import PiCamera
-import argparse
-import warnings
 import datetime
-import dropbox
-import imutils
 import json
 import time
 import cv2
@@ -18,154 +14,102 @@ conf = json.load(open("conf.json"))
 # haarcascadeVersion = "alt"
 haarcascadeFile = "haarcascade_frontalface_" + conf["haarcascadeVersion"] + ".xml"
 face_cascade = cv2.CascadeClassifier("haarcascades/" + haarcascadeFile)
+text = None # global variable: vision status
+quantum = 0 # global variable: control save imgShot frequency
+lock = 0 # global variable: control save imgShot
+key = None # global variable: control loop
+
+def streaming_frame_in_window(frame):
+    if conf["show_video"]:
+
+        # display the security feed
+        cv2.imshow("Security Feed", frame)
+
+        key = cv2.waitKey(1) & 0xFF
+
+
+def update_vision_status(timestamp):
+    cv2.putText(frame, "Room Status: {}".format(text), (10, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
+    ts = timestamp.strftime("%A %d %B %Y %I:%M:%S%p")
+    cv2.putText(frame, ts, (10, frame.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.35, (0, 0, 255), 1)
+
+def save_imgShot(imgShot,cnt):
+    timestr = time.strftime("%Y%m%d-%H%M%S")
+    try:
+        imgShotpath = "/home/pi/FinalProject/second_picture/"
+        imgShotname = "num_" + str(cnt) + "_" + timestr + ".jpg"
+        cv2.imwrite(imgShotpath + imgShotname, imgShot)
+    except:
+        print("can't save imgShot")
+
+
+def find_face_cv2(face_rects):
+    global quantum
+    global lock
+    if quantum == 0:
+        lock = 0
+    if lock == 1:
+        quantum -= 1
+    # loop for finding faces
+    cnt = 1
+    for (x, y, w, h) in face_rects:
+        global text
+        text = "Streaming: person in camera vision"
+        x1 = x
+        y1 = y
+        x2 = x + w
+        y2 = y + h
+
+        cv2.rectangle(frame, (x1, y1), (x2, y2), (255, 0, 0), 2)
+
+        if lock == 0:
+            save_imgShot(frame[y1:y2, x1:x2],cnt)
+            cnt += 1
+
+    if lock == 0:
+        lock = 1
+        quantum = conf["min_save_seconds"]
+    return frame
+
+def processing_frame(camera):
+    rawCapture = PiRGBArray(camera, size=tuple(conf["resolution"]))
+
+
+    for f in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
+        frame = f.array # grab the raw NumPy array representing the image and initialize
+
+        timestamp = datetime.datetime.now()
+        global text
+        text = "Streaming"
+        face_rects = face_cascade.detectMultiScale(frame, 1.3, 5)
+
+        frame = find_face_cv2(face_rects) # loop for finding faces
+        yield frame
+        update_vision_status(timestamp)
+
+        # clear the stream in preparation for the next frame
+        rawCapture.truncate(0)
+
+        # if the `q` key is pressed, break from the lop
+        global key
+        if key == ord("q"):
+            break
+
+
+
+def initialize_camera(camera):
+    camera.resolution = tuple(conf["resolution"])
+    camera.framerate = conf["fps"]
+    time.sleep(conf["camera_warmup_time"])
 
 # initialize the camera and grab a reference to the raw camera capture
 try:
     camera = PiCamera()
-
-    camera.resolution = tuple(conf["resolution"])
-
-    camera.framerate = conf["fps"]
-
-    rawCapture = PiRGBArray(camera, size=tuple(conf["resolution"]))
-
-    # allow the camera to warmup, then initialize the average frame, last
-
-    # uploaded timestamp, and frame motion counter
-
-    print("[INFO] warming up...")
-
-    time.sleep(conf["camera_warmup_time"])
-
-    avg = None
-
-    lastUploaded = datetime.datetime.now()
-
-    # add time to reduce times of taking pictures
-    quantum = 0
-    lock = 0
-
-    motionCounter = 0
-    # capture frames from the camera
-
-    for f in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
-        # grab the raw NumPy array representing the image and initialize
-
-        # the timestamp and occupied/unoccupied text
-
-        frame = f.array
-
-        timestamp = datetime.datetime.now()
-
-        text = "There are not any person"
-
-        # resize the frame, convert it to grayscale, and blur it
-        frame = imutils.resize(frame, width=500)
-
-        gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-
-        face_rects = face_cascade.detectMultiScale(gray_frame, 1.3, 5)
-
-        # if the average frame is None, initialize it
-
-        if quantum == 0:
-            lock = 0
-
-        if lock == 1:
-            quantum -= 1
-
-        # loop for finding faces
-        cnt = 1
-        for (x, y, w, h) in face_rects:
-            x1 = x
-            y1 = y
-            x2 = x + w
-            y2 = y + h
-
-            imgShot = gray_frame[y1:y2, x1:x2]
-            cv2.rectangle(frame, (x1, y1), (x2, y2), (255, 0, 0), 2)
-            timestr = time.strftime("%Y%m%d-%H%M%S")
-            if lock == 0:
-                time.sleep(1)
-                try:
-                    imgShotpath = "/home/pi/FinalProject/second_picture/"
-                    imgShotname = "num_" + str(cnt) + "_" + timestr + ".jpg"
-                    cv2.imwrite(imgShotpath + imgShotname, imgShot)
-                except:
-                    print("can't save imgShot")
-
-            text = "person in camera vision"
-        if lock == 0:
-            lock = 1
-            quantum = conf["fps"]
-
-        # draw the text and timestamp on the frame
-
-        ts = timestamp.strftime("%A %d %B %Y %I:%M:%S%p")
-
-        cv2.putText(frame, "Room Status: {}".format(text), (10, 20),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
-
-        cv2.putText(frame, ts, (10, frame.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX,0.35, (0, 0, 255), 1)
-
-        # check to see if the room is occupied
-        if text == "person in camera vision":
-            # check to see if enough time has passed between uploads
-
-            if (timestamp - lastUploaded).seconds >= conf["min_upload_seconds"]:
-
-                # increment the motion counter
-
-                motionCounter += 1
-
-                # check to see if the number of frames with consistent motion is
-
-                # high enough
-
-                if motionCounter >= conf["min_motion_frames"]:
-
-                    # check to see if dropbox sohuld be used
-
-                    if conf["use_dropbox"]:
-                        # write the image to temporary file
-
-                        t = TempImage()
-
-                        cv2.imwrite(t.path, frame)
-
-                    # update the last uploaded timestamp and reset the motion
-
-                    # counter
-
-                    lastUploaded = timestamp
-
-                    motionCounter = 0
+    initialize_camera(camera)
+    frame = processing_frame(camera)
+    streaming_frame_in_window(frame)
 
 
-
-        # otherwise, the room is not occupied
-
-        else:
-
-            motionCounter = 0
-
-        # check to see if the frames should be displayed to screen
-
-        if conf["show_video"]:
-
-            # display the security feed
-
-            cv2.imshow("Security Feed", frame)
-
-            key = cv2.waitKey(1) & 0xFF
-
-            # if the `q` key is pressed, break from the lop
-
-            if key == ord("q"):
-                break
-
-        # clear the stream in preparation for the next frame
-
-        rawCapture.truncate(0)
 except KeyboardInterrupt:
     camera.close()
 except:
