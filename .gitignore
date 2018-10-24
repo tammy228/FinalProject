@@ -5,3 +5,7 @@
 *.jpg
 *.JPG
 *.png
+
+# pycharm
+.idea/
+*.xml
