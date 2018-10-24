@@ -1,5 +1,5 @@
 # import the necessary packages
-from pyimagesearch.tempimage import TempImage
+from FindFace.stream.pyimagesearch.tempimage import TempImage
 from picamera.array import PiRGBArray
 from picamera import PiCamera
 import argparse
@@ -10,274 +10,170 @@ import imutils
 import json
 import time
 import cv2
- 
 
-# construct the argument parser and parse the arguments
-ap = argparse.ArgumentParser()
-ap.add_argument("-c", "--conf", required=True,
-	help="path to the JSON configuration file")
-args = vars(ap.parse_args())
- 
-# filter warnings, load the configuration and initialize the Dropbox
-# client
-warnings.filterwarnings("ignore")
-conf = json.load(open(args["conf"]))
-client = None
+# load conf.json
+conf = json.load(open("conf.json"))
 
 # prepare haarcascade classifier
-#haarcascadeVersion = "alt"
-haarcascadeFile = "haarcascade_frontalface_" + conf["haarcascadeVersion"] +".xml"
-face_cascade = cv2.CascadeClassifier("haarcascades/"+haarcascadeFile)
-
-
-
-# check to see if the Dropbox should be used
-
-if conf["use_dropbox"]:
-
-	# connect to dropbox and start the session authorization process
-
-	client = dropbox.Dropbox(conf["dropbox_access_token"])
-
-	print("[SUCCESS] dropbox account linked")
+# haarcascadeVersion = "alt"
+haarcascadeFile = "haarcascade_frontalface_" + conf["haarcascadeVersion"] + ".xml"
+face_cascade = cv2.CascadeClassifier("haarcascades/" + haarcascadeFile)
 
 # initialize the camera and grab a reference to the raw camera capture
-
 try:
-	camera = PiCamera()
-	
-	camera.resolution = tuple(conf["resolution"])
-	
-	camera.framerate = conf["fps"]
-	
-	rawCapture = PiRGBArray(camera, size=tuple(conf["resolution"]))
+    camera = PiCamera()
 
-	# allow the camera to warmup, then initialize the average frame, last
+    camera.resolution = tuple(conf["resolution"])
 
-	# uploaded timestamp, and frame motion counter
+    camera.framerate = conf["fps"]
 
-	print("[INFO] warming up...")
+    rawCapture = PiRGBArray(camera, size=tuple(conf["resolution"]))
 
-	time.sleep(conf["camera_warmup_time"])
+    # allow the camera to warmup, then initialize the average frame, last
 
-	avg = None
+    # uploaded timestamp, and frame motion counter
 
-	lastUploaded = datetime.datetime.now()
+    print("[INFO] warming up...")
 
-	motionCounter = 0
-	# capture frames from the camera
-	
-	for f in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
-		# grab the raw NumPy array representing the image and initialize
-	
-		# the timestamp and occupied/unoccupied text
-	
-		frame = f.array
-                #print("frame")
-                #print(frame)
-	
-		timestamp = datetime.datetime.now()
-	
-		text = "There are not any person"
-	
-	 
-	
-		# resize the frame, convert it to grayscale, and blur it
-	
-		frame = imutils.resize(frame, width=1280)
-	
-                gray_frame = frame
-		#gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-	
-		##gray = cv2.GaussianBlur(gray_frame, (21, 21), 0)
-	        face_rects = face_cascade.detectMultiScale(gray_frame, 1.3, 5)
+    time.sleep(conf["camera_warmup_time"])
 
-	 
-	
-		# if the average frame is None, initialize it
-	
-		if avg is None:
-	
-			print("[INFO] starting background model...")
-	
-			avg = gray_frame.copy().astype("float")
-	
-			rawCapture.truncate(0)
-	
-			continue
-	
-	 
-		# accumulate the weighted average between the current frame and
-	
-		# previous frames, then compute the difference between the current
-	
-		# frame and running average
-	
-		##cv2.accumulateWeighted(gray, avg, 0.5)
-	
-		##frameDelta = cv2.absdiff(gray, cv2.convertScaleAbs(avg))
-	
-		# threshold the delta image, dilate the thresholded image to fill
-	
-		# in holes, then find contours on thresholded image
-	
-		##thresh = cv2.threshold(frameDelta, conf["delta_thresh"], 255,
-	
-		##	cv2.THRESH_BINARY)[1]
-	
-		##thresh = cv2.dilate(thresh, None, iterations=2)
-	
-		##cnts = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL,
-	
-		##	cv2.CHAIN_APPROX_SIMPLE)
-	
-		##cnts = cnts[0] if imutils.is_cv2() else cnts[1]
-	
-	 
-	
-		# loop over the contours
-	
-		##for c in cnts:
-	
-			# if the contour is too small, ignore it
-	
-		##	if cv2.contourArea(c) < conf["min_area"]:
-	
-		##		continue
-	
-	 
-	
-			# compute the bounding box for the contour, draw it on the frame,
-	
-			# and update the text
-	
-		##	(x, y, w, h) = cv2.boundingRect(c)
-	
-		##	cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
-	
-		##	text = "Occupied"
-	
-	        # loop2 for finding faces
-                cnt = 1
-                cv2.imwrite("test.jpg" , frame)
-                for(x, y, w, h) in face_rects:
-                    x1 = x
-                    y1 = y
-                    x2 = x + w
-                    y2 = y + h
+    avg = None
 
-                    imgShot = gray_frame[y1:y2, x1:x2]
-                    cv2.rectangle(frame, (x1,y1), (x2,y2), (255, 0, 0), 2)
-                    timestr = time.strftime("%Y%m%d-%H%M%S")
-                    try:
-                        imgShot = cv2.resize(imgShot, (150,150))
-                        imgShotpath = "/home/pi/FinalProject/second_picture/"
-                        imgShotname = "num_" + str(cnt) + "_" + timestr + ".jpg"
-                        cv2.imwrite(imgShotpath + imgShotname , imgShot)
-                    except:
-                        print("can't save imgShot")
-                    text = "person in camera vision"
-                    time.sleep(1)
+    lastUploaded = datetime.datetime.now()
 
-		# draw the text and timestamp on the frame
-	
-		ts = timestamp.strftime("%A %d %B %Y %I:%M:%S%p")
-	
-		cv2.putText(frame, "Room Status: {}".format(text), (10, 20),
-	
-			cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
-	
-		cv2.putText(frame, ts, (10, frame.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX,
-	
-			0.35, (0, 0, 255), 1)
-	
-		# check to see if the room is occupied
-		if text == "person in camera vision":
-			# check to see if enough time has passed between uploads
-	
-			if (timestamp - lastUploaded).seconds >= conf["min_upload_seconds"]:
-	
-				# increment the motion counter
-	
-				motionCounter += 1
-	
-	 
-	
-				# check to see if the number of frames with consistent motion is
-	
-				# high enough
-	
-				if motionCounter >= conf["min_motion_frames"]:
-	
-					# check to see if dropbox sohuld be used
-	
-					if conf["use_dropbox"]:
-	
-						# write the image to temporary file
-	
-						t = TempImage()
-	
-						cv2.imwrite(t.path, frame)
-	
-	 
-	
-						# upload the image to Dropbox and cleanup the tempory image
-	
-						print("[UPLOAD] {}".format(ts))
-	
-						path = "/{base_path}/{timestamp}.jpg".format(
-	
-						    base_path=conf["dropbox_base_path"], timestamp=ts)
-	
-						client.files_upload(open(t.path, "rb").read(), path)
-	
-						t.cleanup()
-	
-	 
-	
-					# update the last uploaded timestamp and reset the motion
-	
-					# counter
-	
-					lastUploaded = timestamp
-	
-					motionCounter = 0
-	
-	 
-	
-		# otherwise, the room is not occupied
-	
-		else:
-	
-			motionCounter = 0
-	
-		# check to see if the frames should be displayed to screen
-	
-		if conf["show_video"]:
-	
-			# display the security feed
-	
-			cv2.imshow("Security Feed", frame)
-	
-			key = cv2.waitKey(1) & 0xFF
-	
-	 
-	
-			# if the `q` key is pressed, break from the lop
-	
-			if key == ord("q"):
-	
-				break
-	
-	 
-	
-		# clear the stream in preparation for the next frame
-	
-		rawCapture.truncate(0)
+    # add time to reduce times of taking pictures
+    quantum = 0
+    lock = 0
+
+    motionCounter = 0
+    # capture frames from the camera
+
+    for f in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
+        # grab the raw NumPy array representing the image and initialize
+
+        # the timestamp and occupied/unoccupied text
+
+        frame = f.array
+
+        timestamp = datetime.datetime.now()
+
+        text = "There are not any person"
+
+        # resize the frame, convert it to grayscale, and blur it
+        frame = imutils.resize(frame, width=500)
+
+        gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+
+        face_rects = face_cascade.detectMultiScale(gray_frame, 1.3, 5)
+
+        # if the average frame is None, initialize it
+
+        if quantum == 0:
+            lock = 0
+
+        if lock == 1:
+            quantum -= 1
+
+    # loop for finding faces
+    cnt = 1
+    for (x, y, w, h) in face_rects:
+        x1 = x
+        y1 = y
+        x2 = x + w
+        y2 = y + h
+
+        imgShot = gray_frame[y1:y2, x1:x2]
+        cv2.rectangle(frame, (x1, y1), (x2, y2), (255, 0, 0), 2)
+        timestr = time.strftime("%Y%m%d-%H%M%S")
+        if lock == 0:
+            time.sleep(1)
+            try:
+                imgShotpath = "/home/pi/FinalProject/second_picture/"
+                imgShotname = "num_" + str(cnt) + "_" + timestr + ".jpg"
+                cv2.imwrite(imgShotpath + imgShotname, imgShot)
+            except:
+                print("can't save imgShot")
+
+        text = "person in camera vision"
+    if lock == 0:
+        lock = 1
+        quantum = conf["fps"]
+
+    # draw the text and timestamp on the frame
+
+    ts = timestamp.strftime("%A %d %B %Y %I:%M:%S%p")
+
+    cv2.putText(frame, "Room Status: {}".format(text), (10, 20),
+
+                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
+
+    cv2.putText(frame, ts, (10, frame.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX,
+
+                0.35, (0, 0, 255), 1)
+
+    # check to see if the room is occupied
+    if text == "person in camera vision":
+        # check to see if enough time has passed between uploads
+
+        if (timestamp - lastUploaded).seconds >= conf["min_upload_seconds"]:
+
+            # increment the motion counter
+
+            motionCounter += 1
+
+            # check to see if the number of frames with consistent motion is
+
+            # high enough
+
+            if motionCounter >= conf["min_motion_frames"]:
+
+                # check to see if dropbox sohuld be used
+
+                if conf["use_dropbox"]:
+                    # write the image to temporary file
+
+                    t = TempImage()
+
+                    cv2.imwrite(t.path, frame)
+
+                # update the last uploaded timestamp and reset the motion
+
+                # counter
+
+                lastUploaded = timestamp
+
+                motionCounter = 0
+
+
+
+    # otherwise, the room is not occupied
+
+    else:
+
+        motionCounter = 0
+
+    # check to see if the frames should be displayed to screen
+
+    if conf["show_video"]:
+
+        # display the security feed
+
+        cv2.imshow("Security Feed", frame)
+
+        key = cv2.waitKey(1) & 0xFF
+
+        # if the `q` key is pressed, break from the lop
+
+        if key == ord("q"):
+            break
+
+    # clear the stream in preparation for the next frame
+
+    rawCapture.truncate(0)
 except KeyboardInterrupt:
-	camera.close()
+    camera.close()
 except:
-	camera.close()
-        print("something wrong")
+camera.close()
+print("something wrong")
 finally:
-	camera.close()
+camera.close()
