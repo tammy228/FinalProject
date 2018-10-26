@@ -1,5 +1,5 @@
 {
-	"show_video": true,
+	"show_video": false,
 	"min_save_seconds": 16,
 	"min_motion_frames": 8,
 	"camera_warmup_time": 2.5,
