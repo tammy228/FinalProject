@@ -44,7 +44,7 @@ try:
     # add time to reduce times of taking pictures
     quantum = 0
     lock = 0
-
+    test = 0
     motionCounter = 0
     # capture frames from the camera
 
@@ -60,10 +60,10 @@ try:
         text = "There are not any person"
 
         # resize the frame, convert it to grayscale, and blur it
-        frame = imutils.resize(frame, width=500)
+        #frame = imutils.resize(frame, width=500)
 
-        gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-
+        #gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        gray_frame = frame
         face_rects = face_cascade.detectMultiScale(gray_frame, 1.3, 5)
 
         # if the average frame is None, initialize it

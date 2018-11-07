@@ -2,7 +2,8 @@
 from importlib import import_module
 import os
 from flask import Flask, render_template, Response
-
+import datetime
+from time import sleep
 # import camera driver
 if os.environ.get('CAMERA'):
     Camera = import_module('camera_' + os.environ['CAMERA']).Camera
@@ -22,11 +23,12 @@ def index():
 
 
 def gen(camera):
-    """Video streaming generator function."""
-    while True:
-        frame = camera.get_frame()
-        yield (b'--frame\r\n'
-               b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+	"""Video streaming generator function."""
+	while True:
+		frame = camera.get_frame()
+		print(len(frame))
+		yield (b'--frame\r\n'
+			b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 
 
 @app.route('/video_feed')
