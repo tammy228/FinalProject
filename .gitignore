@@ -1,5 +1,5 @@
 *.pyc
-
+*.ipynb
 
 # picture
 *.jpg
@@ -9,3 +9,6 @@
 # pycharm
 .idea/
 *.xml
+
+#dlib
+dlib-19.6/

@@ -25,6 +25,8 @@ def recognizeFace(path,model):
 	x = x/255.0
 
 	prob = model.predict(x)
+	
+	'''
 	max_index = np.argmax(prob)
 	name_list = read_name_list('/home/pi/FinalProject/data/test')
 	print("Everyone's Probility:")
@@ -34,4 +36,16 @@ def recognizeFace(path,model):
 	    show_name = name_list[max_index]
 	else:
 	    show_name = 'Can Not Identify'
+	return show_name
+	'''
+	prob = prob.tolist()
+	max_index = np.argmax(prob)
+	print("Everyone's probility\n")
+	name_list = read_name_list('/media/tammy/T/FinalProject_Local/data/test')
+	prob.sort(key=lambda x:x[0])
+	for i in range(0, max_index+1):
+		if round(prob[0][i]*100,4) != 0.0000:
+			print('{} : {:.4%}' .format(str(name_list[i]) ,prob[0][i]))
+
+	show_name = name_list[max_index]
 	return show_name
